@@ -6,7 +6,7 @@ This is a Django-based Doctor Information System for managing and viewing doctor
 - Doctor list with search and filter
 - Doctor detail popup with photo and address
 - Responsive, modern UI using Tailwind CSS
-- Admin and authentication support
+- Admin  support
 
 ## Getting Started
 
@@ -19,16 +19,32 @@ This is a Django-based Doctor Information System for managing and viewing doctor
    - Python 3.8+
    - Django 4+
    - (Optional) Node.js for frontend assets
-3. **Run migrations:**
+3. **Activate virtual environment:**
    ```bash
+   core/Scripts/activate  # On Windows
+   source core/bin/activate  # On Linux/Mac
+   ```
+4. **Install Python requirements:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+5. **Run migrations:**
+   ```bash
+   python manage.py makemigrations
    python manage.py migrate
    ```
-4. **Start the server:**
+6. **Start the server:**
    ```bash
    python manage.py runserver
    ```
-5. **Access the app:**
+7. **Access the app:**
    Open your browser at [http://localhost:8000](http://localhost:8000)
+
+## Tailwind CSS Commands
+If you use Tailwind CSS and need to build or watch CSS changes, run:
+```bash
+npx tailwindcss -i ./static/src/input.css -o ./static/css/output.css --watch
+```
 
 ## Project Structure
 - `doctor_project/` - Main Django project
