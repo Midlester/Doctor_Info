@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="description" content="Doctor Information System - View, add, and manage doctor details.">
+        <meta name="keywords" content="doctor, information, medical, healthcare, registration, management">
+        <title>Doctor Information</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+        <style>
+            /* Base styles for proper mobile rendering */
+            html, body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                overflow-x: hidden;
+            }
+            
+            /* Main container with proper scrolling */
+            .main-container {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+                width: 100%;
+            }
+            
+            /* Content area that will scroll */
+            .content-area {
+                flex: 1;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 20px;
+            }
+            
+            /* Table container with proper scrolling */
+            .table-container {
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin-top: 1rem;
+                background: white;
+                border-radius: 0.5rem;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            
+            /* Table styling */
+            .data-table {
+                width: 100%;
+                min-width: 800px; /* Ensures table doesn't collapse on mobile */
+                border-collapse: collapse;
+            }
+            
+            /* Responsive adjustments */
+            @media (max-width: 640px) {
+                .filter-controls {
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+                
+                .search-container {
+                    width: 100%;
+                }
+            }
+        </style>
+    </head>
+    <body class="bg-gray-100 min-h-screen">
+        <div class="main-container">
+            <div class="content-area">
+                <div class="container mx-auto px-2 sm:px-4 md:px-0">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-center mb-2 sm:mb-4">Doctor Information</h1>
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2 sm:gap-0">
+                        <!-- Login Button removed: always show table and filters -->
+                    </div>
+                    <!-- Filter Form -->
+                    <div class="w-full max-w-full">
+                    <form id="filterForm" method="get" class="w-full max-w-full mb-4">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center w-full gap-2">
+                            <div class="w-full sm:w-auto flex-1 flex items-center gap-2">
+                                <input type="text"
+                                       id="searchInput"
+                                       class="p-2 border border-gray-400 rounded w-full text-xs sm:text-sm sm:w-[220px] md:w-[260px]"
+                                       placeholder="Search by ID, Name, Division...">
+                                <button type="button" onclick="searchDoctors()"
+                                        class="bg-blue-500 text-white px-3 sm:px-4 py-2 rounded text-xs sm:text-sm flex items-center justify-center">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                            <div class="w-full">
+                              <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-2 justify-end w-full sm:w-auto">
+                                <select name="division" id="divisionFilter" class="p-2 border border-gray-400 rounded text-xs sm:text-sm w-full sm:w-[140px] md:w-[160px]">
+                                    <option value="">All Divisions</option>
+                                    {% for division in divisions %}
+                                        <option value="{{ division }}" {% if request.GET.division == division %}selected{% endif %}>{{ division }}</option>
+                                    {% endfor %}
+                                </select>
+                                <select name="district" id="districtFilter" class="p-2 border border-gray-400 rounded text-xs sm:text-sm w-full sm:w-[140px] md:w-[160px]">
+                                    <option value="">All Districts</option>
+                                    {% for district in districts %}
+                                        <option value="{{ district }}" {% if request.GET.district == district %}selected{% endif %}>{{ district }}</option>
+                                    {% endfor %}
+                                </select>
+                                <select name="upazilla" id="upazillaFilter" class="p-2 border border-gray-400 rounded text-xs sm:text-sm w-full sm:w-[140px] md:w-[160px]">
+                                    <option value="">All Upazillas</option>
+                                    {% for upazilla in upazillas %}
+                                        <option value="{{ upazilla }}" {% if request.GET.upazilla == upazilla %}selected{% endif %}>{{ upazilla }}</option>
+                                    {% endfor %}
+                                </select>
+                                <select name="union" id="unionFilter" class="p-2 border border-gray-400 rounded text-xs sm:text-sm w-full sm:w-[140px] md:w-[160px]">
+                                    <option value="">All Unions</option>
+                                    {% for union in unions %}
+                                        <option value="{{ union }}" {% if request.GET.union == union %}selected{% endif %}>{{ union }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="bg-blue-500 text-white px-3 py-2 rounded text-xs sm:text-sm w-full sm:w-[140px] md:w-[160px] flex items-center justify-center"><i class="fas fa-filter"></i> <span class="ml-1">Filter</span></button>
+                              </div>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+                    
+                    <!-- Table Container -->
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead class="bg-gray-200">
+                                <tr>
+                                    <th class="py-2 px-4 text-left">SL</th>
+                                    <th class="py-2 px-4 text-left">DLS ID</th>
+                                    <th class="py-2 px-4 text-left">ACI ID</th>
+                                    <th class="py-2 px-4 text-left">Name</th>
+                                    <th class="py-2 px-4 text-left">Division</th>
+                                    <th class="py-2 px-4 text-left">District</th>
+                                    <th class="py-2 px-4 text-left">Upazilla</th>
+                                    <th class="py-2 px-4 text-left">Union</th>
+                                    {% if user.is_authenticated %}
+                                    <th class="py-2 px-4 text-center">Actions</th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for doctor in page_obj.object_list %}
+                                <tr class="border-t hover:bg-gray-50">
+                                    <td class="py-2 px-4">{{ doctor.sl|default:"-" }}</td>
+                                    <td class="py-2 px-4">{{ doctor.dls_id|default:"Not Available" }}</td>
+                                    <td class="py-2 px-4">{{ doctor.aci_id|default:"-" }}</td>
+                                    <td class="py-2 px-4 flex items-center">
+                                        {% if doctor.photo and doctor.photo.url %}
+                                        <img src="{{ doctor.photo.url }}" class="h-8 w-8 rounded-full object-cover border border-gray-300 mr-2" alt="Doctor Photo">
+                                        {% else %}
+                                        <div class="h-8 w-8 rounded-full bg-gray-200 border border-gray-300 flex items-center justify-center mr-2">
+                                            <i class="fas fa-user text-gray-500"></i>
+                                        </div>
+                                        {% endif %}
+                                        <span>{{ doctor.name|default:"No Name" }}</span>
+                                    </td>
+                                    <td class="py-2 px-4">{{ doctor.divisions|default:"-" }}</td>
+                                    <td class="py-2 px-4">{{ doctor.district|default:"-" }}</td>
+                                    <td class="py-2 px-4">{{ doctor.upazilla|default:"-" }}</td>
+                                    <td class="py-2 px-4">{{ doctor.union|default:"-" }}</td>
+                                    {% if user.is_authenticated %}
+                                    <td class="py-2 px-4 text-center">
+                                        <button type="button" onclick="showPopup2('{{ doctor.sl|escapejs }}', '{{ doctor.name|escapejs }}', '{{ doctor.dls_id|escapejs }}', '{{ doctor.aci_id|escapejs }}', '{{ doctor.divisions|escapejs }}', '{{ doctor.district|escapejs }}', '{{ doctor.upazilla|escapejs }}', '{{ doctor.union|escapejs }}', '{% if doctor.photo %}{{ doctor.photo.url }}{% else %}/static/default.jpg{% endif %}')"
+                                                class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if page_obj.has_other_pages %}
+                    <div class="flex justify-center mt-6">
+                        <nav class="inline-flex rounded-md shadow">
+                            {% if page_obj.has_previous %}
+                                <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 rounded-l border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">Previous</a>
+                            {% else %}
+                                <span class="px-3 py-1 rounded-l border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed">Previous</span>
+                            {% endif %}
+                            
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <span class="px-3 py-1 border-t border-b border-gray-300 bg-blue-500 text-white">{{ num }}</span>
+                                {% else %}
+                                    <a href="?page={{ num }}" class="px-3 py-1 border-t border-b border-gray-300 bg-white text-gray-700 hover:bg-gray-100">{{ num }}</a>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 rounded-r border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">Next</a>
+                            {% else %}
+                                <span class="px-3 py-1 rounded-r border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed">Next</span>
+                            {% endif %}
+                        </nav>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- New Doctor Info Popup (Photo left, info right) -->
+        <div id="popupModal2"
+             class="fixed inset-0 hidden flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+            <div class="bg-white rounded-lg p-4 sm:p-6 shadow-lg w-full max-w-2xl mx-2 flex flex-col">
+                <!-- Name at the top, centered -->
+                <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-center w-full" id="popup2Name"></h2>
+                <div class="flex flex-col sm:flex-row items-stretch gap-4 w-full h-full min-h-[200px]">
+                    <!-- Photo on the left -->
+                    <div class="flex-shrink-0 flex flex-col justify-end w-32 sm:w-40 h-full border border-gray-200 rounded bg-gray-50 overflow-hidden relative">
+                        <img
+                             class="object-contain w-full h-full rounded bg-white"
+                             src="image.jpg"
+                             alt="Doctor Photo"
+                             width="160" height="100%">
+                        <span class="absolute text-gray-400 flex items-center justify-center hidden w-full h-full top-0 left-0">
+                            <i class="fas fa-user fa-5x"></i>
+                        </span>
+                    </div>
+                    <!-- Info on the right -->
+                    <div class="flex-1 w-full h-full flex flex-col justify-between">
+                        <table class="w-full text-base sm:text-lg border border-gray-200 rounded">
+                            <tbody>
+                                <tr class="border-b border-gray-100">
+                                    <td class="font-semibold pr-2 py-2 w-32">SL:</td>
+                                    <td id="popup2SL" class="py-2"></td>
+                                </tr>
+                                <tr class="border-b border-gray-100">
+                                    <td class="font-semibold pr-2 py-2">DLS ID:</td>
+                                    <td id="popup2DlsID" class="py-2"></td>
+                                </tr>
+                                <tr class="border-b border-gray-100">
+                                    <td class="font-semibold pr-2 py-2">ACI ID:</td>
+                                    <td id="popup2AciID" class="py-2"></td>
+                                </tr>
+                                <tr>
+                                    <td class="font-semibold pr-2 py-2 align-top">Address:</td>
+                                    <td class="py-2 align-top" id="popup2Address"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button onclick="closePopup2()"
+                                class="mt-10 bg-red-500 text-white px-4 py-2 rounded w-full text-base sm:text-lg">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+        // Search functionality
+        function searchDoctors() {
+            const input = document.getElementById("searchInput").value.toLowerCase();
+            const rows = document.querySelectorAll("tbody tr");
+            
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(input) ? "" : "none";
+            });
+        }
+
+        // New popup functions
+        function showPopup2(sl, name, dls_id, aci_id, division, district, upazilla, union, photoUrl) {
+            document.getElementById("popup2SL").textContent = sl || "-";
+            document.getElementById("popup2Name").textContent = name;
+            document.getElementById("popup2DlsID").textContent = dls_id || "-";
+            document.getElementById("popup2AciID").textContent = aci_id || "-";
+            document.getElementById("popup2Address").textContent = [division, district, upazilla, union].filter(Boolean).join(", ") || "-";
+            var img = document.querySelector('#popupModal2 img');
+            var icon = document.querySelector('#popupModal2 span');
+            if (photoUrl && !photoUrl.endsWith('/default.jpg')) {
+                img.src = photoUrl;
+                img.classList.remove("hidden");
+                icon.classList.add("hidden");
+            } else {
+                img.classList.add("hidden");
+                icon.classList.remove("hidden");
+            }
+            document.getElementById("popupModal2").classList.remove("hidden");
+        }
+
+        function closePopup2() {
+            document.getElementById("popupModal2").classList.add("hidden");
+        }
+
+        // Filter dropdown logic
+        const doctorLocations = [
+            {% for doctor in page_obj.paginator.object_list %}
+            {
+                division: `{{ doctor.divisions|escapejs }}`,
+                district: `{{ doctor.district|escapejs }}`,
+                upazilla: `{{ doctor.upazilla|escapejs }}`,
+                union: `{{ doctor.union|escapejs }}`
+            },
+            {% endfor %}
+        ];
+
+        // Build location mappings
+        const divisionToDistricts = {};
+        const districtToUpazillas = {};
+        const upazillaToUnions = {};
+
+        doctorLocations.forEach(loc => {
+            if (!divisionToDistricts[loc.division]) divisionToDistricts[loc.division] = new Set();
+            if (!districtToUpazillas[loc.district]) districtToUpazillas[loc.district] = new Set();
+            if (!upazillaToUnions[loc.upazilla]) upazillaToUnions[loc.upazilla] = new Set();
+            
+            if (loc.district) divisionToDistricts[loc.division].add(loc.district);
+            if (loc.upazilla) districtToUpazillas[loc.district].add(loc.upazilla);
+            if (loc.union) upazillaToUnions[loc.upazilla].add(loc.union);
+        });
+
+        // Convert sets to arrays
+        Object.keys(divisionToDistricts).forEach(k => divisionToDistricts[k] = Array.from(divisionToDistricts[k]));
+        Object.keys(districtToUpazillas).forEach(k => districtToUpazillas[k] = Array.from(districtToUpazillas[k]));
+        Object.keys(upazillaToUnions).forEach(k => upazillaToUnions[k] = Array.from(upazillaToUnions[k]));
+
+        // DOM elements
+        const divisionSelect = document.getElementById('divisionFilter');
+        const districtSelect = document.getElementById('districtFilter');
+        const upazillaSelect = document.getElementById('upazillaFilter');
+        const unionSelect = document.getElementById('unionFilter');
+
+        // Update dropdown options
+        function setOptions(select, options, allLabel, selectedValue) {
+            select.innerHTML = '';
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = allLabel;
+            select.appendChild(opt);
+            
+            options.forEach(val => {
+                if (!val) return;
+                const o = document.createElement('option');
+                o.value = val;
+                o.textContent = val;
+                if (selectedValue && selectedValue === val) o.selected = true;
+                select.appendChild(o);
+            });
+        }
+
+        // Event handlers
+        function handleDivisionChange() {
+            const division = divisionSelect.value;
+            setOptions(districtSelect, division && divisionToDistricts[division] ? divisionToDistricts[division] : [], 'All Districts', '');
+            setOptions(upazillaSelect, [], 'All Upazillas', '');
+            setOptions(unionSelect, [], 'All Unions', '');
+        }
+
+        function handleDistrictChange() {
+            const district = districtSelect.value;
+            setOptions(upazillaSelect, district && districtToUpazillas[district] ? districtToUpazillas[district] : [], 'All Upazillas', '');
+            setOptions(unionSelect, [], 'All Unions', '');
+        }
+
+        function handleUpazillaChange() {
+            const upazilla = upazillaSelect.value;
+            setOptions(unionSelect, upazilla && upazillaToUnions[upazilla] ? upazillaToUnions[upazilla] : [], 'All Unions', '');
+        }
+
+        // Event listeners
+        divisionSelect.addEventListener('change', handleDivisionChange);
+        districtSelect.addEventListener('change', handleDistrictChange);
+        upazillaSelect.addEventListener('change', handleUpazillaChange);
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            handleDivisionChange();
+        });
+        </script>
+    </body>
+</html>
