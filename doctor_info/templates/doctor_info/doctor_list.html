@@ -180,66 +180,63 @@
                     </div>
                     
                     <!-- Improved Pagination -->
-                    {% if page_obj.has_other_pages %}
-                    <div class="flex justify-center mt-6">
-                        <nav class="flex items-center space-x-1">
-                            {% if page_obj.has_previous %}
-                                <a href="?page=1" class="px-3 py-1 border border-gray-300 rounded-l-md bg-white text-gray-700 hover:bg-gray-50">
-                                    <i class="fas fa-angle-double-left"></i>
-                                </a>
-                                <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
-                                    <i class="fas fa-angle-left"></i>
-                                </a>
-                            {% else %}
-                                <span class="px-3 py-1 border border-gray-300 rounded-l-md bg-gray-100 text-gray-400 cursor-not-allowed">
-                                    <i class="fas fa-angle-double-left"></i>
-                                </span>
-                                <span class="px-3 py-1 border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed">
-                                    <i class="fas fa-angle-left"></i>
-                                </span>
-                            {% endif %}
-                            
-                            {% if page_obj.number|add:'-4' > 1 %}
-                                <a href="?page={{ page_obj.number|add:'-5' }}" class="px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
-                                    &hellip;
-                                </a>
-                            {% endif %}
-                            
-                            {% for i in page_obj.paginator.page_range %}
-                                {% if page_obj.number == i %}
-                                    <span class="px-3 py-1 border border-gray-300 bg-blue-500 text-white">{{ i }}</span>
-                                {% elif i > page_obj.number|add:'-5' and i < page_obj.number|add:'5' %}
-                                    <a href="?page={{ i }}" class="px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">{{ i }}</a>
-                                {% endif %}
-                            {% endfor %}
-                            
-                            {% if page_obj.paginator.num_pages > page_obj.number|add:'4' %}
-                                <a href="?page={{ page_obj.number|add:'5' }}" class="px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
-                                    &hellip;
-                                </a>
-                            {% endif %}
-                            
-                            {% if page_obj.has_next %}
-                                <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
-                                    <i class="fas fa-angle-right"></i>
-                                </a>
-                                <a href="?page={{ page_obj.paginator.num_pages }}" class="px-3 py-1 border border-gray-300 rounded-r-md bg-white text-gray-700 hover:bg-gray-50">
-                                    <i class="fas fa-angle-double-right"></i>
-                                </a>
-                            {% else %}
-                                <span class="px-3 py-1 border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed">
-                                    <i class="fas fa-angle-right"></i>
-                                </span>
-                                <span class="px-3 py-1 border border-gray-300 rounded-r-md bg-gray-100 text-gray-400 cursor-not-allowed">
-                                    <i class="fas fa-angle-double-right"></i>
-                                </span>
-                            {% endif %}
-                        </nav>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+                   {% if page_obj.has_other_pages %}
+<div class="flex justify-center mt-6 overflow-x-auto">
+    <nav class="flex flex-wrap justify-center items-center gap-1 px-2">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="min-w-[2.5rem] px-3 py-1 border border-gray-300 rounded-l-md bg-white text-gray-700 hover:bg-gray-50 text-center">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="min-w-[2.5rem] px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-center">
+                <i class="fas fa-angle-left"></i>
+            </a>
+        {% else %}
+            <span class="min-w-[2.5rem] px-3 py-1 border border-gray-300 rounded-l-md bg-gray-100 text-gray-400 cursor-not-allowed text-center">
+                <i class="fas fa-angle-double-left"></i>
+            </span>
+            <span class="min-w-[2.5rem] px-3 py-1 border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed text-center">
+                <i class="fas fa-angle-left"></i>
+            </span>
+        {% endif %}
+        
+        {% if page_obj.number|add:'-4' > 1 %}
+            <a href="?page={{ page_obj.number|add:'-5' }}" class="min-w-[2.5rem] px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-center hidden sm:block">
+                &hellip;
+            </a>
+        {% endif %}
+        
+        {% for i in page_obj.paginator.page_range %}
+            {% if page_obj.number == i %}
+                <span class="min-w-[2.5rem] px-3 py-1 border border-gray-300 bg-blue-500 text-white text-center">{{ i }}</span>
+            {% elif i > page_obj.number|add:'-5' and i < page_obj.number|add:'5' %}
+                <a href="?page={{ i }}" class="min-w-[2.5rem] px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-center">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.paginator.num_pages > page_obj.number|add:'4' %}
+            <a href="?page={{ page_obj.number|add:'5' }}" class="min-w-[2.5rem] px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-center hidden sm:block">
+                &hellip;
+            </a>
+        {% endif %}
+        
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="min-w-[2.5rem] px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-center">
+                <i class="fas fa-angle-right"></i>
+            </a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="min-w-[2.5rem] px-3 py-1 border border-gray-300 rounded-r-md bg-white text-gray-700 hover:bg-gray-50 text-center">
+                <i class="fas fa-angle-double-right"></i>
+            </a>
+        {% else %}
+            <span class="min-w-[2.5rem] px-3 py-1 border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed text-center">
+                <i class="fas fa-angle-right"></i>
+            </span>
+            <span class="min-w-[2.5rem] px-3 py-1 border border-gray-300 rounded-r-md bg-gray-100 text-gray-400 cursor-not-allowed text-center">
+                <i class="fas fa-angle-double-right"></i>
+            </span>
+        {% endif %}
+    </nav>
+</div>
+{% endif %}
 
         <!-- Popup Modal -->
         <div id="popupModal2" class="fixed inset-0 hidden flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
