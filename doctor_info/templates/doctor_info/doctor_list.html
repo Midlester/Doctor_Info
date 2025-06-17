@@ -57,6 +57,18 @@
                 .search-container {
                     width: 100%;
                 }
+                
+                .pagination-container .page-item {
+                    display: none;
+                }
+                
+                .pagination-container .page-item.active,
+                .pagination-container .page-item:first-child,
+                .pagination-container .page-item:last-child,
+                .pagination-container .page-item.prev,
+                .pagination-container .page-item.next {
+                    display: block;
+                }
             }
         </style>
     </head>
@@ -167,28 +179,60 @@
                         </table>
                     </div>
                     
-                    <!-- Pagination -->
+                    <!-- Improved Pagination -->
                     {% if page_obj.has_other_pages %}
                     <div class="flex justify-center mt-6">
-                        <nav class="inline-flex rounded-md shadow">
+                        <nav class="flex items-center space-x-1">
                             {% if page_obj.has_previous %}
-                                <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 rounded-l border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">Previous</a>
+                                <a href="?page=1" class="px-3 py-1 border border-gray-300 rounded-l-md bg-white text-gray-700 hover:bg-gray-50">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                                <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
                             {% else %}
-                                <span class="px-3 py-1 rounded-l border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed">Previous</span>
+                                <span class="px-3 py-1 border border-gray-300 rounded-l-md bg-gray-100 text-gray-400 cursor-not-allowed">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </span>
+                                <span class="px-3 py-1 border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed">
+                                    <i class="fas fa-angle-left"></i>
+                                </span>
                             {% endif %}
                             
-                            {% for num in page_obj.paginator.page_range %}
-                                {% if page_obj.number == num %}
-                                    <span class="px-3 py-1 border-t border-b border-gray-300 bg-blue-500 text-white">{{ num }}</span>
-                                {% else %}
-                                    <a href="?page={{ num }}" class="px-3 py-1 border-t border-b border-gray-300 bg-white text-gray-700 hover:bg-gray-100">{{ num }}</a>
+                            {% if page_obj.number|add:'-4' > 1 %}
+                                <a href="?page={{ page_obj.number|add:'-5' }}" class="px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
+                                    &hellip;
+                                </a>
+                            {% endif %}
+                            
+                            {% for i in page_obj.paginator.page_range %}
+                                {% if page_obj.number == i %}
+                                    <span class="px-3 py-1 border border-gray-300 bg-blue-500 text-white">{{ i }}</span>
+                                {% elif i > page_obj.number|add:'-5' and i < page_obj.number|add:'5' %}
+                                    <a href="?page={{ i }}" class="px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">{{ i }}</a>
                                 {% endif %}
                             {% endfor %}
                             
+                            {% if page_obj.paginator.num_pages > page_obj.number|add:'4' %}
+                                <a href="?page={{ page_obj.number|add:'5' }}" class="px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
+                                    &hellip;
+                                </a>
+                            {% endif %}
+                            
                             {% if page_obj.has_next %}
-                                <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 rounded-r border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">Next</a>
+                                <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                                <a href="?page={{ page_obj.paginator.num_pages }}" class="px-3 py-1 border border-gray-300 rounded-r-md bg-white text-gray-700 hover:bg-gray-50">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
                             {% else %}
-                                <span class="px-3 py-1 rounded-r border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed">Next</span>
+                                <span class="px-3 py-1 border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed">
+                                    <i class="fas fa-angle-right"></i>
+                                </span>
+                                <span class="px-3 py-1 border border-gray-300 rounded-r-md bg-gray-100 text-gray-400 cursor-not-allowed">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </span>
                             {% endif %}
                         </nav>
                     </div>
