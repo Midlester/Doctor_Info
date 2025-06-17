@@ -6,7 +6,7 @@ from .forms import DoctorInfoForm
 from .models import DoctorInfo
 from django.contrib.auth.models import User # type: ignore
 from django.contrib.auth.forms import UserCreationForm # type: ignore
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator # type: ignore
 
 from .forms import DoctorInfoForm
 from .models import DoctorInfo
@@ -25,7 +25,7 @@ def user_login(request):
     return render(request, "doctor_info/login.html")
 
 def register(request):
-    from django.contrib.auth.forms import UserCreationForm
+    from django.contrib.auth.forms import UserCreationForm # type: ignore
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -38,7 +38,6 @@ def register(request):
 def user_logout(request):
     logout(request)
     return redirect("login")
-
 def doctor_list(request):
     doctors = DoctorInfo.objects.all()
     # Filtering

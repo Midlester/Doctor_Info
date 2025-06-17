@@ -9,7 +9,6 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <style>
-            /* Base styles for proper mobile rendering */
             html, body {
                 height: 100%;
                 width: 100%;
@@ -18,15 +17,14 @@
                 overflow-x: hidden;
             }
             
-            /* Main container with proper scrolling */
             .main-container {
                 display: flex;
                 flex-direction: column;
                 min-height: 100vh;
                 width: 100%;
+                padding: 1rem;
             }
             
-            /* Content area that will scroll */
             .content-area {
                 flex: 1;
                 overflow-y: auto;
@@ -34,7 +32,6 @@
                 padding-bottom: 20px;
             }
             
-            /* Table container with proper scrolling */
             .table-container {
                 width: 100%;
                 overflow-x: auto;
@@ -45,14 +42,12 @@
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
             
-            /* Table styling */
             .data-table {
                 width: 100%;
-                min-width: 800px; /* Ensures table doesn't collapse on mobile */
+                min-width: 800px;
                 border-collapse: collapse;
             }
             
-            /* Responsive adjustments */
             @media (max-width: 640px) {
                 .filter-controls {
                     flex-direction: column;
@@ -65,14 +60,12 @@
             }
         </style>
     </head>
-    <body class="bg-gray-100 min-h-screen">
+    <body class="bg-gray-100 min-h-screen p-4">
         <div class="main-container">
             <div class="content-area">
                 <div class="container mx-auto px-2 sm:px-4 md:px-0">
                     <h1 class="text-2xl sm:text-3xl font-bold text-center mb-2 sm:mb-4">Doctor Information</h1>
-                    <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2 sm:gap-0">
-                        <!-- Login Button removed: always show table and filters -->
-                    </div>
+                    
                     <!-- Filter Form -->
                     <div class="w-full max-w-full">
                     <form id="filterForm" method="get" class="w-full max-w-full mb-4">
@@ -83,7 +76,7 @@
                                        class="p-2 border border-gray-400 rounded w-full text-xs sm:text-sm sm:w-[220px] md:w-[260px]"
                                        placeholder="Search by ID, Name, Division...">
                                 <button type="button" onclick="searchDoctors()"
-                                        class="bg-blue-500 text-white px-3 sm:px-4 py-2 rounded text-xs sm:text-sm flex items-center justify-center">
+                                        class="bg-blue-500 text-white px-12 sm:px-3 py-2.5 rounded text-xs sm:text-sm flex items-center justify-center">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
@@ -113,7 +106,9 @@
                                         <option value="{{ union }}" {% if request.GET.union == union %}selected{% endif %}>{{ union }}</option>
                                     {% endfor %}
                                 </select>
-                                <button type="submit" class="bg-blue-500 text-white px-3 py-2 rounded text-xs sm:text-sm w-full sm:w-[140px] md:w-[160px] flex items-center justify-center"><i class="fas fa-filter"></i> <span class="ml-1">Filter</span></button>
+                                <button type="submit" class="bg-blue-500 text-white px-3 py-2 rounded text-xs sm:text-sm w-full sm:w-[140px] md:w-[160px] flex items-center justify-center">
+                                    <i class="fas fa-filter"></i> <span class="ml-1">Filter</span>
+                                </button>
                               </div>
                             </div>
                         </div>
@@ -202,25 +197,17 @@
             </div>
         </div>
 
-        <!-- New Doctor Info Popup (Photo left, info right) -->
-        <div id="popupModal2"
-             class="fixed inset-0 hidden flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+        <!-- Popup Modal -->
+        <div id="popupModal2" class="fixed inset-0 hidden flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
             <div class="bg-white rounded-lg p-4 sm:p-6 shadow-lg w-full max-w-2xl mx-2 flex flex-col">
-                <!-- Name at the top, centered -->
                 <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-center w-full" id="popup2Name"></h2>
                 <div class="flex flex-col sm:flex-row items-stretch gap-4 w-full h-full min-h-[200px]">
-                    <!-- Photo on the left -->
                     <div class="flex-shrink-0 flex flex-col justify-end w-32 sm:w-40 h-full border border-gray-200 rounded bg-gray-50 overflow-hidden relative">
-                        <img
-                             class="object-contain w-full h-full rounded bg-white"
-                             src="image.jpg"
-                             alt="Doctor Photo"
-                             width="160" height="100%">
+                        <img class="object-contain w-full h-full rounded bg-white" src="image.jpg" alt="Doctor Photo" width="160" height="100%">
                         <span class="absolute text-gray-400 flex items-center justify-center hidden w-full h-full top-0 left-0">
                             <i class="fas fa-user fa-5x"></i>
                         </span>
                     </div>
-                    <!-- Info on the right -->
                     <div class="flex-1 w-full h-full flex flex-col justify-between">
                         <table class="w-full text-base sm:text-lg border border-gray-200 rounded">
                             <tbody>
@@ -242,8 +229,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <button onclick="closePopup2()"
-                                class="mt-10 bg-red-500 text-white px-4 py-2 rounded w-full text-base sm:text-lg">Close</button>
+                        <button onclick="closePopup2()" class="mt-10 bg-red-500 text-white px-4 py-2 rounded w-full text-base sm:text-lg">Close</button>
                     </div>
                 </div>
             </div>
@@ -261,7 +247,7 @@
             });
         }
 
-        // New popup functions
+        // Popup functions
         function showPopup2(sl, name, dls_id, aci_id, division, district, upazilla, union, photoUrl) {
             document.getElementById("popup2SL").textContent = sl || "-";
             document.getElementById("popup2Name").textContent = name;
@@ -285,89 +271,171 @@
             document.getElementById("popupModal2").classList.add("hidden");
         }
 
-        // Filter dropdown logic
-        const doctorLocations = [
-            {% for doctor in page_obj.paginator.object_list %}
-            {
-                division: `{{ doctor.divisions|escapejs }}`,
-                district: `{{ doctor.district|escapejs }}`,
-                upazilla: `{{ doctor.upazilla|escapejs }}`,
-                union: `{{ doctor.union|escapejs }}`
-            },
-            {% endfor %}
-        ];
-
-        // Build location mappings
-        const divisionToDistricts = {};
-        const districtToUpazillas = {};
-        const upazillaToUnions = {};
-
-        doctorLocations.forEach(loc => {
-            if (!divisionToDistricts[loc.division]) divisionToDistricts[loc.division] = new Set();
-            if (!districtToUpazillas[loc.district]) districtToUpazillas[loc.district] = new Set();
-            if (!upazillaToUnions[loc.upazilla]) upazillaToUnions[loc.upazilla] = new Set();
-            
-            if (loc.district) divisionToDistricts[loc.division].add(loc.district);
-            if (loc.upazilla) districtToUpazillas[loc.district].add(loc.upazilla);
-            if (loc.union) upazillaToUnions[loc.upazilla].add(loc.union);
-        });
-
-        // Convert sets to arrays
-        Object.keys(divisionToDistricts).forEach(k => divisionToDistricts[k] = Array.from(divisionToDistricts[k]));
-        Object.keys(districtToUpazillas).forEach(k => districtToUpazillas[k] = Array.from(districtToUpazillas[k]));
-        Object.keys(upazillaToUnions).forEach(k => upazillaToUnions[k] = Array.from(upazillaToUnions[k]));
-
-        // DOM elements
-        const divisionSelect = document.getElementById('divisionFilter');
-        const districtSelect = document.getElementById('districtFilter');
-        const upazillaSelect = document.getElementById('upazillaFilter');
-        const unionSelect = document.getElementById('unionFilter');
-
-        // Update dropdown options
-        function setOptions(select, options, allLabel, selectedValue) {
-            select.innerHTML = '';
-            const opt = document.createElement('option');
-            opt.value = '';
-            opt.textContent = allLabel;
-            select.appendChild(opt);
-            
-            options.forEach(val => {
-                if (!val) return;
-                const o = document.createElement('option');
-                o.value = val;
-                o.textContent = val;
-                if (selectedValue && selectedValue === val) o.selected = true;
-                select.appendChild(o);
-            });
-        }
-
-        // Event handlers
-        function handleDivisionChange() {
-            const division = divisionSelect.value;
-            setOptions(districtSelect, division && divisionToDistricts[division] ? divisionToDistricts[division] : [], 'All Districts', '');
-            setOptions(upazillaSelect, [], 'All Upazillas', '');
-            setOptions(unionSelect, [], 'All Unions', '');
-        }
-
-        function handleDistrictChange() {
-            const district = districtSelect.value;
-            setOptions(upazillaSelect, district && districtToUpazillas[district] ? districtToUpazillas[district] : [], 'All Upazillas', '');
-            setOptions(unionSelect, [], 'All Unions', '');
-        }
-
-        function handleUpazillaChange() {
-            const upazilla = upazillaSelect.value;
-            setOptions(unionSelect, upazilla && upazillaToUnions[upazilla] ? upazillaToUnions[upazilla] : [], 'All Unions', '');
-        }
-
-        // Event listeners
-        divisionSelect.addEventListener('change', handleDivisionChange);
-        districtSelect.addEventListener('change', handleDistrictChange);
-        upazillaSelect.addEventListener('change', handleUpazillaChange);
-
-        // Initialize on load
+        // Location filtering logic - NEW IMPROVED VERSION
         document.addEventListener('DOMContentLoaded', function() {
-            handleDivisionChange();
+            // Get all doctor location data
+            const doctorLocations = [
+                {% for doctor in page_obj.paginator.object_list %}
+                {
+                    division: `{{ doctor.divisions|escapejs }}`,
+                    district: `{{ doctor.district|escapejs }}`,
+                    upazilla: `{{ doctor.upazilla|escapejs }}`,
+                    union: `{{ doctor.union|escapejs }}`
+                },
+                {% endfor %}
+            ];
+
+            // Build complete location hierarchy
+            const locationHierarchy = {};
+            
+            doctorLocations.forEach(loc => {
+                if (!loc.division) return;
+                
+                // Initialize division if not exists
+                if (!locationHierarchy[loc.division]) {
+                    locationHierarchy[loc.division] = {
+                        districts: {},
+                        name: loc.division
+                    };
+                }
+                
+                // Skip if no district
+                if (!loc.district) return;
+                
+                // Initialize district if not exists
+                if (!locationHierarchy[loc.division].districts[loc.district]) {
+                    locationHierarchy[loc.division].districts[loc.district] = {
+                        upazillas: {},
+                        name: loc.district
+                    };
+                }
+                
+                // Skip if no upazilla
+                if (!loc.upazilla) return;
+                
+                // Initialize upazilla if not exists
+                if (!locationHierarchy[loc.division].districts[loc.district].upazillas[loc.upazilla]) {
+                    locationHierarchy[loc.division].districts[loc.district].upazillas[loc.upazilla] = {
+                        unions: new Set(),
+                        name: loc.upazilla
+                    };
+                }
+                
+                // Add union if exists
+                if (loc.union) {
+                    locationHierarchy[loc.division].districts[loc.district].upazillas[loc.upazilla].unions.add(loc.union);
+                }
+            });
+
+            // DOM elements
+            const divisionSelect = document.getElementById('divisionFilter');
+            const districtSelect = document.getElementById('districtFilter');
+            const upazillaSelect = document.getElementById('upazillaFilter');
+            const unionSelect = document.getElementById('unionFilter');
+            const filterForm = document.getElementById('filterForm');
+
+            // Update dropdown options
+            function updateDropdown(select, options, allLabel, selectedValue = null) {
+                const currentValue = select.value;
+                select.innerHTML = '';
+                
+                // Add "All" option
+                const allOption = document.createElement('option');
+                allOption.value = '';
+                allOption.textContent = allLabel;
+                select.appendChild(allOption);
+                
+                // Add other options
+                options.forEach(value => {
+                    if (!value) return;
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = value;
+                    if (selectedValue && selectedValue === value) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+                
+                // Maintain current selection if possible
+                if (currentValue && options.includes(currentValue)) {
+                    select.value = currentValue;
+                }
+            }
+
+            // Get all unique values from doctor locations
+            function getUniqueValues(property) {
+                const values = new Set();
+                doctorLocations.forEach(loc => {
+                    if (loc[property]) values.add(loc[property]);
+                });
+                return Array.from(values).sort();
+            }
+
+            // Update all dropdowns based on current selections
+            function updateAllDropdowns() {
+                // Get current selections
+                const division = divisionSelect.value;
+                const district = districtSelect.value;
+                const upazilla = upazillaSelect.value;
+                
+                // Update divisions (always show all)
+                updateDropdown(divisionSelect, getUniqueValues('division'), 'All Divisions');
+                
+                // Update districts based on division selection
+                let districts = [];
+                if (division && locationHierarchy[division]) {
+                    districts = Object.keys(locationHierarchy[division].districts).sort();
+                } else {
+                    districts = getUniqueValues('district');
+                }
+                updateDropdown(districtSelect, districts, 'All Districts');
+                
+                // Update upazillas based on district selection
+                let upazillas = [];
+                if (district && division && locationHierarchy[division]?.districts[district]) {
+                    upazillas = Object.keys(locationHierarchy[division].districts[district].upazillas).sort();
+                } else {
+                    upazillas = getUniqueValues('upazilla');
+                }
+                updateDropdown(upazillaSelect, upazillas, 'All Upazillas');
+                
+                // Update unions based on upazilla selection
+                let unions = [];
+                if (upazilla && district && division && locationHierarchy[division]?.districts[district]?.upazillas[upazilla]) {
+                    unions = Array.from(locationHierarchy[division].districts[district].upazillas[upazilla].unions).sort();
+                } else {
+                    unions = getUniqueValues('union');
+                }
+                updateDropdown(unionSelect, unions, 'All Unions');
+            }
+
+            // Event listeners for dropdown changes
+            divisionSelect.addEventListener('change', function() {
+                updateAllDropdowns();
+                // Submit form automatically when selection changes
+                filterForm.submit();
+            });
+
+            districtSelect.addEventListener('change', function() {
+                updateAllDropdowns();
+                // Submit form automatically when selection changes
+                filterForm.submit();
+            });
+
+            upazillaSelect.addEventListener('change', function() {
+                updateAllDropdowns();
+                // Submit form automatically when selection changes
+                filterForm.submit();
+            });
+
+            unionSelect.addEventListener('change', function() {
+                // Submit form automatically when selection changes
+                filterForm.submit();
+            });
+
+            // Initialize dropdowns when page loads
+            updateAllDropdowns();
         });
         </script>
     </body>
