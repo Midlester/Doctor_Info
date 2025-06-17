@@ -21,7 +21,7 @@ This is a Django-based Doctor Information System for managing and viewing doctor
    - (Optional) Node.js for frontend assets
 3. **Activate virtual environment:**
    ```bash
-   core/Scripts/activate  # On Windows
+   .\core\Scripts\activate  # On Windows
    source core/bin/activate  # On Linux/Mac
    ```
 4. **Install Python requirements:**
